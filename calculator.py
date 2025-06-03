@@ -10,7 +10,17 @@ def hits(ws,crit=6,reroll=0):
     crit_perc+= dice_roll * reroll * crit_perc
     return {"hits":hit_perc, "crits":crit_perc}
 
-def wounds(stren,tough,devs=7,reroll=0):
+def wounds(svt,devs=7,reroll=0):
+    wound = dice_roll*svt
+    wound+= dice_roll * reroll * wound
+    dev=0
+    if devs != 7:
+        dev = dice_roll*(7-devs)
+        dev+= dice_roll*reroll*dev
+        wound -= dev
+    return {"wounds":wound, "devs":dev}
+
+def strenVsTough(stren,tough):
     if stren/2 >= tough:
         svt = 5
     elif stren > tough:
@@ -21,11 +31,12 @@ def wounds(stren,tough,devs=7,reroll=0):
         svt = 2
     else:
         svt = 3
-    wound = dice_roll*svt
-    wound+= dice_roll * reroll * wound
-    dev=0
-    if devs != 7:
-        dev = dice_roll*(7-devs)
-        dev+= dice_roll*reroll*dev
-        wound -= dev
-    return {"wounds":wound, "devs":dev}
+    return svt
+
+def saves(sv,ap,inv=7,reroll=0):
+    save = 7-sv-ap
+    if 7-inv > save:
+        save = 7-inv
+    saved = dice_roll*save
+    saved+= dice_roll * reroll * saved
+    return saved
