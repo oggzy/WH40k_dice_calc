@@ -40,3 +40,7 @@ def saves(sv,ap,inv=7,reroll=0):
     saved = dice_roll*save
     saved+= dice_roll * reroll * saved
     return saved
+
+def deal_damage(dmg,saved,fnp):
+    fnp_roll = 7-fnp
+    damaged = fnp_roll*dice_roll*(1-saved)*dmg

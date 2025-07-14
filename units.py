@@ -12,22 +12,36 @@ class Unit:
         self.fnp = fnp
     
     def attack(self,weapon,target):
+        #get weapon
         shooter = self.weapons[weapon]
-        totalshots = shooter.attacks * self.models
+        #get target
+        #calculate chance of hit
         hit = hits(shooter.skill,crit=shooter.crits,reroll=shooter.hreroll)
-        totalhits = 1-(1-hit["hits"])**totalshots
+        totalhits = hit["hits"]
+        wound = 0
         if shooter.lethal:
-            wound = hit["crits"] * totalshots     
-        else:
-            totalhits += hit["crits"] * totalshots
-            wound = 0
+            wound = hit["crits"]
         if shooter.sustain:
-            totalhits+= (shooter.sustain)*hit["crits"] 
+            totalhits+= (shooter.sustain+1)*hit["crits"]
+        if not (shooter.lethal or shooter.sustain):
+            totalhits+=hit["crits"]
+        print(totalhits)
+        #calculate chance of wound
         stvto = strenVsTough(shooter.strength,target.toughness)
-        wounded = wounds(stvto,devs = shooter.dev,reroll=shooter.wreroll)
-        wound += 1-(1-wounded["wounds"])**totalhits
+        wound += wounds(stvto,devs = shooter.dev,reroll=shooter.wreroll)["wounds"]*totalhits
+        print(wound)
+        #calculate chance of save
         unsaved = saves(target.save , shooter.ap, inv = target.invl) * wound
-        return unsaved      
+        print(unsaved)
+        #times by shots
+        shots = shooter.attacks * self.models
+        total_wounding = shots*unsaved
+        #times by damage
+        damage_done=total_wounding*shooter.damage
+        #calculate chance of fnp
+        ##deal_damage()
+        #return average number of models killed
+        return damage_done
 
 
 class Weapon:
