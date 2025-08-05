@@ -11,6 +11,31 @@ class Unit:
         self.weapons = weapons
         self.fnp = fnp
     
+    def __str__(self):
+        if self.invl != 7:
+            inv = f" {self.invl}+ "
+        else:
+            inv = "N/a "
+        if self.fnp != 7:
+            fnop = f"{self.fnp}+"
+        else:
+            fnop = "N/a"
+        
+        if len(self.weapons) :
+            wep = ""
+            for w,v in self.weapons.items():
+                wep+= f"{w}\n"+ str(v)
+        else:
+            wep = "\nValues not defined. (please add weapons before attempting an attack with this unit)"
+
+        stringof = f"""\n{self.models} * {self.name} 
+ T | W | SV | INVL | FNP
+ {self.toughness} | {self.wounds} | {self.save}+ | {inv} | {fnop}
+ WEAPONS
+{wep}
+"""
+        return stringof
+        
     def attack(self,weapon,target):
         #get weapon
         shooter = self.weapons[weapon]
@@ -40,6 +65,9 @@ class Unit:
         ##deal_damage()
         #return average number of models killed
         return damage_done
+    
+    def weaponise():
+        pass
 
 
 class Weapon:

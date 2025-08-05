@@ -8,6 +8,7 @@ print("""
 """)
 
 def main():
+    units = []
     while(True):
         print("""1 : Add unit
 2 : Add Weapon
@@ -18,9 +19,15 @@ Q : quit""")
         x = input("\nPlease Select an option : ")
         match x:
             case "1":
-                add_unit()
+                new_U = add_unit()
+                units.append(new_U)
+
+                
             case "2":
-                add_weapon()
+                if not units:
+                    print ("No units availiable. Please add a unit before adding a weapon.")
+                else:
+                    add_weapon()
                 
             case "3":
                 attack()
@@ -41,12 +48,37 @@ Q : quit""")
 
 ### Add unit
 def add_unit():
-    print ("1")
+    print("\nplease input the value for each of your units following attributes (for saves please input the dice roll required eg. 4+ = 4)")
+    attributes = ['Number of Mobels',"toughness","save","wounds","invulnerable save (if none enter 0)","feel no pain (if none enter 0)"]
+    name = input("Name :")
+    input_att = [name]
+    for x in attributes:
+        y = input(f"{x} :")
+        if int(y):
+            input_att.append(int(y))
+    weapons = {}
+    while(True):
+        print("please input the weapons availiable to this unit one by one. Press f when done.\n(please add weapons to a unit before attempting an attack calculation)")
+        w = input("weapon name:")
+        match w:
+            case q if q in "Ff":
+                break
+            case _:
+                wep = add_weapon(w)
+                weapons.update({w:wep})
     
+    input_att.insert(5, weapons)
+
+    new_unit = Unit(*input_att)
+    
+    print("\nNew unit created :" + str(new_unit)+"\n")
+
+            
 
 ### Add weapon
-def add_weapon():
+def add_weapon(name=0):
     print ("2")
+    return "pass"
 
 ### Calculate Average Attack
 def attack():
