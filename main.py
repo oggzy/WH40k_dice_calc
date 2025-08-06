@@ -7,8 +7,9 @@ print("""
 ****************************
 """)
 
+units = []
+
 def main():
-    units = []
     while(True):
         print("""1 : Add unit
 2 : Add Weapon
@@ -58,18 +59,23 @@ def add_unit():
             input_att.append(int(y))
     weapons = {}
     while(True):
-        print("please input the weapons availiable to this unit one by one. Press f when done.\n(please add weapons to a unit before attempting an attack calculation)")
-        w = input("weapon name:")
-        match w:
-            case q if q in "Ff":
+        print("please input the weapons availiable to this unit one by one.\n(please add weapons to a unit before attempting an attack calculation)")
+        q = input("add weapon (y/n):")
+        match q:
+            case q if q in "Nn":
                 break
+            case q if q in "Yy":
+                wep = add_weapon(name)
+                weapons.update(wep)
             case _:
-                wep = add_weapon(w)
-                weapons.update({w:wep})
+                print ("\nSorry I didnt understand that input. please try again.\n")
+    
     
     input_att.insert(5, weapons)
 
     new_unit = Unit(*input_att)
+
+    return new_unit
     
     print("\nNew unit created :" + str(new_unit)+"\n")
 
@@ -77,8 +83,27 @@ def add_unit():
 
 ### Add weapon
 def add_weapon(name=0):
-    print ("2")
-    return "pass"
+    if not name:
+        print("\nplease select an availiable unit to assign this weapon to. (eg. for 1 : necron warriors please input 1)\n")
+        for x in range(len(units)): 
+            print(f"{x} : {str(units[x].name)}\n")
+        while(True):
+            unit_input = input("Selection : ")
+            if unit_input in str(range(len(units))):
+                units.pop(int(unit_input))
+                print("Success")
+                break
+            else:
+                print ("\nSorry I didnt understand that input. please try again.\n")
+    print("\nplease input the value for each of your weapons following  (for skill/ap please input the dice roll required eg. 4+ = 4)")
+    attributes = ["attacks","weapon skill","strength","armour penetration","damage"]
+    wep_name = input("Name :")
+    input_att = [wep_name]
+    for x in attributes:
+        y = input(f"{x} :")
+        if int(y):
+            input_att.append(abs(int(y)))
+    
 
 ### Calculate Average Attack
 def attack():
@@ -86,11 +111,39 @@ def attack():
 
 ### remove unit
 def rm_unit():
-    print("4")
+    if not units:
+        print("\nNo units availiable\n")
+        return
+    print("\nplease select a unit to remove. (eg. for 1 : necron warriors please input 1)\n")
+    for x in range(len(units)): 
+        print(f"{x} : {units[x].name}\n")
+    while(True):
+        unit_input = input("Selection : ")
+        if unit_input in str(range(len(units))):
+            units.pop(int(unit_input))
+            print("Success")
+            break
+        else:
+            print ("\nSorry I didnt understand that input. please try again.\n")
+
+
 
 ### remove weapon
 def rm_weapon():
-    print("5")
+    if not units:
+        print("\nNo units availiable\n")
+        return
+    print("\nplease select an availiable unit to remove this weapon from. (eg. for 1 : necron warriors please input 1)\n")
+    for x in range(len(units)): 
+        print(f"{x} : {str(units[x])}\n")
+    unit_input = input("Selection :")
+    unit = units[unit_input]
+    print("\nplease select an availiable weapon to remove (eg. for 1 : gauss flayer please input 1)\n")
+    weps = unit.weapons.keys()
+    for x in range(len(weps)): 
+        print(f"{x} : {str(weps[x])}\n")
+    wep_input = input("Selection :")
+    unit.weapons.pop(wep_input)
 
 
 main()

@@ -38,9 +38,15 @@ def saves(sv,ap,inv=7,reroll=0):
     if 7-inv > save:
         save = 7-inv
     saved = dice_roll*save
-    saved+= dice_roll * reroll * saved
+    saved+= dice_roll * reroll * unsaved
     return saved
 
-def deal_damage(dmg,saved,fnp):
+def deal_damage(shots,unsaved,dmg,wnds,fnp):
+    pain = 1-(7-fnp)*dice_roll
+    felt = pain*dmg
+    
+
+
     fnp_roll = 7-fnp
-    damaged = fnp_roll*dice_roll*(1-saved)*dmg
+    damaged = fnp_roll*dice_roll*unsaved*damaging
+    return damaged
