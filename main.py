@@ -7,9 +7,13 @@ print("""
 ****************************
 """)
 
-units = []
+
 
 def main():
+
+    global units
+    units = []
+
     while(True):
         print("""1 : Add unit
 2 : Add Weapon
@@ -65,7 +69,7 @@ def add_unit():
             case q if q in "Nn":
                 break
             case q if q in "Yy":
-                wep = add_weapon(name)
+                wep = add_weapon(weapons)
                 weapons.update(wep)
             case _:
                 print ("\nSorry I didnt understand that input. please try again.\n")
@@ -75,35 +79,50 @@ def add_unit():
 
     new_unit = Unit(*input_att)
 
+    print("\nNew unit created :" + str(new_unit)+"\n")
+
     return new_unit
     
-    print("\nNew unit created :" + str(new_unit)+"\n")
+    
 
             
 
 ### Add weapon
-def add_weapon(name=0):
-    if not name:
+def add_weapon(weapons="n"):
+    return_wep = False
+    if weapons == "n":
         print("\nplease select an availiable unit to assign this weapon to. (eg. for 1 : necron warriors please input 1)\n")
         for x in range(len(units)): 
             print(f"{x} : {str(units[x].name)}\n")
         while(True):
             unit_input = input("Selection : ")
             if unit_input in str(range(len(units))):
-                units.pop(int(unit_input))
-                print("Success")
+                wep_unit = units[int(unit_input)]
+                weapons = wep_unit.weapons
                 break
             else:
                 print ("\nSorry I didnt understand that input. please try again.\n")
-    print("\nplease input the value for each of your weapons following  (for skill/ap please input the dice roll required eg. 4+ = 4)")
+    else:
+        return_wep = True
+    print("\nplease input the value for each of your weapons following  (for skill / ap please input the value from datasheet without a sign eg. 4+ = 4 / -1 = 1)")
     attributes = ["attacks","weapon skill","strength","armour penetration","damage"]
-    wep_name = input("Name :")
-    input_att = [wep_name]
+    while(True):
+        wep_name = input("Name :")
+        if wep_name not in weapons:
+            break
+        else:
+            print("a weapon of this name already exists. please give weapons unique names.\n")
+    input_att = []
     for x in attributes:
         y = input(f"{x} :")
         if int(y):
             input_att.append(abs(int(y)))
-    
+    if return_wep:
+        return {wep_name : Weapon(*input_att)}
+    else:
+        wep_unit.weaponise(wep_name,input_att)
+        print("success")
+        
 
 ### Calculate Average Attack
 def attack():
@@ -117,11 +136,15 @@ def rm_unit():
     print("\nplease select a unit to remove. (eg. for 1 : necron warriors please input 1)\n")
     for x in range(len(units)): 
         print(f"{x} : {units[x].name}\n")
+    print("B : back\n")
     while(True):
         unit_input = input("Selection : ")
         if unit_input in str(range(len(units))):
             units.pop(int(unit_input))
             print("Success")
+            break
+        elif unit_input in "Bb":
+            print("")
             break
         else:
             print ("\nSorry I didnt understand that input. please try again.\n")
@@ -137,13 +160,13 @@ def rm_weapon():
     for x in range(len(units)): 
         print(f"{x} : {str(units[x])}\n")
     unit_input = input("Selection :")
-    unit = units[unit_input]
+    unit = units[int(unit_input)]
     print("\nplease select an availiable weapon to remove (eg. for 1 : gauss flayer please input 1)\n")
-    weps = unit.weapons.keys()
+    weps = list(unit.weapons.keys())
     for x in range(len(weps)): 
         print(f"{x} : {str(weps[x])}\n")
     wep_input = input("Selection :")
-    unit.weapons.pop(wep_input)
+    unit.weapons.pop(str(weps[int(wep_input)]))
 
 
 main()

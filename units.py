@@ -32,6 +32,7 @@ class Unit:
  T | W | SV | INVL | FNP
  {self.toughness} | {self.wounds} | {self.save}+ | {inv} | {fnop}
  WEAPONS
+
 {wep}
 """
         return stringof
@@ -55,20 +56,17 @@ class Unit:
         wounding=wounds(stvto,devs = shooter.dev,reroll=shooter.wreroll)
         wound += wounding["wounds"]*totalhits
         #calculate chance of save
-        unsaved = saves(target.save , shooter.ap, inv = target.invl) * wound + wounding["devs"]*totalhits
+        unsaved = (1-saves(target.save , shooter.ap, inv = target.invl))* wound + wounding["devs"]*totalhits
         #times by shots
         shots = shooter.attacks * self.models
-        total_wounding = shots*unsaved
-        #times by damage (min of damage and wounds)
-        damage_done=total_wounding*min(shooter.damage, target.wounds)
-        #calculate chance of fnp
-        ##deal_damage()
+        #calculate chance of fnp and damage
+        damage_done = deal_damage(shots,shooter.dmg,target.wounds,target.fnp)
         #return average number of models killed
         return damage_done
     
-    def weaponise():
-        pass
-
+    def weaponise(self,wep_name,attr):
+        if wep_name not in self.weapons:
+            self.weapons.update({wep_name : Weapon(*attr)})
 
 class Weapon:
     def __init__(self,attacks,skill,strength,ap,damage,crits=6,lethal=False,sustain=False,hreroll=0,dev=7,wreroll=0):
@@ -83,3 +81,40 @@ class Weapon:
         self.hreroll = hreroll
         self.dev = dev
         self.wreroll = wreroll
+
+    def __str__(self):
+        spec = ""
+        x = 0
+        if self.lethal:
+            spec += " lethal hits\n "
+            x+=1
+        if self.sustain:
+            spec += f"sustained {self.sustain}+\n"
+            x+=1
+        if self.dev != 7:
+            spec += "devestating wounds\n"
+            x+=1
+        if self.crits != 6:
+            spec += f"criticals on {self.crits}\n"
+            x+=1
+        if self.hreroll+self.skill == 6:
+            spec += "reroll hits\n"
+            x+=1
+        elif self.hreroll:
+            spec += f"reroll on {self.hreroll} or less\n"
+            x+=1
+        if self.wreroll+self.skill == 6:
+            spec += "reroll wounds\n"
+            x+=1
+        elif self.wreroll:
+            spec += f"reroll on {self.wreroll} or less\n"
+            x+=1
+
+        if not x:
+            spec = "N/a\n"
+
+        stringof = f""" WS | S | AP | D
+ {self.skill}+ | {self.strength} | -{self.ap} | {self.damage}
+SPECIAL RULES
+{spec}"""
+        return stringof
